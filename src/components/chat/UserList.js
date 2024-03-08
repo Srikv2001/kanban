@@ -3,12 +3,14 @@ import { Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import "./userList.css";
 import api from "../../services/api";
-
+import md5 from 'md5';
+import UserAvatar from "./UserAvatar";
 ///////////////////////////////////////////////////////////////////////////////
 
-export default function UserList({ onUserClick }) {
+export default function UserList({ onUserClick}) {
   const [userList, setUserList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState("");
 
   useEffect(() => {
     const apiUrl = "/hiring/entryLevel/getCandidateForRecruiter";
@@ -27,28 +29,43 @@ export default function UserList({ onUserClick }) {
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleUserClick = (userName) => {
-    onUserClick(userName);
+  const handleUserClick = (userName, email) => {
+    // currentuser(userName);
+    const user={
+      "username":userName,
+      "email":email
+    }
+    onUserClick(user);
+    
   };
-
+  
   return (
     <div className="user-list-container">
+      <h3>Chats</h3>
       <input
-       className="search-bar"
+        className="search-bar"
         type="text"
         placeholder="Search users..."
         onChange={(e) => setSearchTerm(e.target.value)}
       />
       <ul className="user-list">
         {filteredUserList.map((item, index) => (
-          <li key={item.id} onClick={() => handleUserClick(item.name)}>
-            <Avatar
+          <li key={item.id}
+            className={selectedUser === item.name ? 'selected-user' : ''}
+            onClick={() => handleUserClick(item.name, item.email)}
+          >
+            {/* <Avatar
+              name="nishadharan"
+              // src={avatarSrc}
               style={{
                 backgroundColor: '#87d068',
+                width: "50px",
+                height: "50px"
               }}
               icon={<UserOutlined />}
-            />
-           {item.name.toUpperCase()}
+            /> */}
+            <UserAvatar username={item.name} />
+            
           </li>
         ))}
       </ul>
